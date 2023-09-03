@@ -1,5 +1,4 @@
 import re
-import argparse
 from urllib.parse import urljoin
 import logging
 
@@ -26,11 +25,13 @@ def whats_new(session):
     # первый элемент, поэтому используется метод find().
     main_div = find_tag(soup, 'section', attrs={'id': 'what-s-new-in-python'})
 
-    # Шаг 2-й: поиск внутри main_div следующего тега div с классом toctree-wrapper.
+    # Шаг 2-й: поиск внутри main_div следующего тега div с классом
+    # toctree-wrapper.
     # Здесь тоже нужен только первый элемент, используется метод find().
     div_with_ul = find_tag(main_div, 'div', attrs={'class': 'toctree-wrapper'})
 
-    # Шаг 3-й: поиск внутри div_with_ul всех элементов списка li с классом toctree-l1.
+    # Шаг 3-й: поиск внутри div_with_ul всех элементов списка li с классом
+    # toctree-l1.
     # Нужны все теги, поэтому используется метод find_all().
     sections_by_python = div_with_ul.find_all(
         'li', attrs={'class': 'toctree-l1'}
@@ -45,7 +46,8 @@ def whats_new(session):
         response = get_response(session, version_link)
         if response is None:
             return
-        soup = BeautifulSoup(response.text, features='lxml')  # Сварите "супчик".
+        soup = BeautifulSoup(response.text, features='lxml')  # Сварите
+        # "супчик".
         h1 = find_tag(soup, 'h1')  # Найдите в "супе" тег h1.
         dl = find_tag(soup, 'dl')
         dl_text = dl.text.replace('\n', ' ')  # Найдите в "супе" тег dl.
