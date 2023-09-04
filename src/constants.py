@@ -15,3 +15,5 @@ EXPECTED_STATUS = {
     '': ('Draft', 'Active'),
 }
 OUTPUT_CHOICES = ('pretty', 'file')
+LOGS_DIR_PATH = 'logs'
+RESULTS_DIR_PATH = 'results'

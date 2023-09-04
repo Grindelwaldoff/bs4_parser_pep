@@ -17,6 +17,10 @@ def whats_new(session):
     whats_new_url = urljoin(MAIN_DOC_URL, 'whatsnew/')
     response = get_response(session, whats_new_url)
     if response is None:
+        logging.exception(
+            f'Возникла ошибка при загрузке страницы {url}',
+            stack_info=True
+        )
         return
     # Создание "супа".
     soup = BeautifulSoup(response.text, features='lxml')
@@ -116,7 +120,7 @@ def download(session):
 
 def pep(session):
     results = [
-        ('Статус', 'Кол-во')
+        ('Status', 'Amount')
     ]
     statuses = {
         'A': 0,

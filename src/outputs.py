@@ -3,7 +3,7 @@ import csv
 import logging
 
 from prettytable import PrettyTable
-from constants import DATETIME_FORMAT, BASE_DIR
+from constants import DATETIME_FORMAT, BASE_DIR, RESULTS_DIR_PATH
 
 
 def control_output(results, cli_args):
@@ -21,7 +21,7 @@ def default_output(results):
 
 
 def file_output(results, cli_args):
-    results_dir = BASE_DIR / 'results'
+    results_dir = BASE_DIR / RESULTS_DIR_PATH
     results_dir.mkdir(exist_ok=True)
     parser_mode = cli_args.mode
     now = dt.now().strftime(DATETIME_FORMAT)
