@@ -6,3 +6,8 @@ class ParserFindTagException(Exception):
 class EmptyTagList(Exception):
     """Вызывается, когда find_all не находит элементы."""
     pass
+
+
+class RequestException(Exception):
+    """Вызывается, если модуль не смог получить доступ к ресурсу."""
+    pass

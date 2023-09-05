@@ -3,15 +3,13 @@ from urllib.parse import urljoin
 import logging
 
 import requests_cache
-from requests import RequestException
-from bs4 import BeautifulSoup
 from tqdm import tqdm
 
 from constants import BASE_DIR, MAIN_DOC_URL, PEP_DOC_URL, EXPECTED_STATUS
 from configs import configure_argument_parser, configure_logging
 from outputs import control_output
-from exceptions import EmptyTagList, ParserFindTagException
-from utils import find_tag, get_response, make_soup
+from exceptions import EmptyTagList, ParserFindTagException, RequestException
+from utils import find_tag, make_soup
 
 
 def whats_new(session):
@@ -43,11 +41,7 @@ def whats_new(session):
         href = version_a_tag['href']
         version_link = urljoin(whats_new_url, href)
         # Здесь начинается новый код!
-        response = get_response(session, version_link)
-        if response is None:
-            return
-        soup = BeautifulSoup(response.text, features='lxml')  # Сварите
-        # "супчик".
+        soup = make_soup(session, version_link)
         main_page_section = find_tag(
             soup,
             'div',
@@ -207,7 +201,7 @@ def main():
              f'со страницы в методе {parser_mode}')
         )
     except ParserFindTagException as error_msg:
-        logging.error(error_msg, stack_info=True)
+        logging.exception(error_msg, stack_info=True)
 
 
 if __name__ == '__main__':

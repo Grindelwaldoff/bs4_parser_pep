@@ -14,6 +14,7 @@ EXPECTED_STATUS = {
     'W': ('Withdrawn',),
     '': ('Draft', 'Active'),
 }
-OUTPUT_CHOICES = ('pretty', 'file')
+PRETTY_IN_TERMINAL_DISPLAY = 'pretty'
+IN_FILE_SAVE = 'file'
 LOGS_DIR_PATH = 'logs'
 RESULTS_DIR_PATH = 'results'

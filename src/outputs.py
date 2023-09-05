@@ -5,14 +5,14 @@ import logging
 from prettytable import PrettyTable
 from constants import (
     DATETIME_FORMAT, BASE_DIR,
-    RESULTS_DIR_PATH, OUTPUT_CHOICES
+    RESULTS_DIR_PATH, IN_FILE_SAVE, PRETTY_IN_TERMINAL_DISPLAY
 )
 
 
 def control_output(results, cli_args):
-    if cli_args.output == OUTPUT_CHOICES[0]:
+    if cli_args.output == PRETTY_IN_TERMINAL_DISPLAY:
         pretty_output(results)
-    elif cli_args.output == OUTPUT_CHOICES[1]:
+    elif cli_args.output == IN_FILE_SAVE:
         file_output(results, cli_args)
     else:
         default_output(results)
