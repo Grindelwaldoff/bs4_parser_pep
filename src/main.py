@@ -53,7 +53,7 @@ def whats_new(session):
             'div',
             attrs={'class': 'body'}
         )  # Найдите в "супе" тег h1.
-        dl_text = main_page_section.dl.text.replace('\n', ' ')  # Найдите в "супе" тег dl.
+        dl_text = main_page_section.dl.text.replace('\n', ' ')
         results.append(
             (version_link, main_page_section.h1.text, dl_text)
         )
