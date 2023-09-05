@@ -3,33 +3,20 @@ from urllib.parse import urljoin
 import logging
 
 import requests_cache
+from requests import RequestException
 from bs4 import BeautifulSoup
 from tqdm import tqdm
 
 from constants import BASE_DIR, MAIN_DOC_URL, PEP_DOC_URL, EXPECTED_STATUS
 from configs import configure_argument_parser, configure_logging
 from outputs import control_output
-from exceptions import EmptyTagList
-from utils import find_tag, get_response
-
-
-def make_soup(session, url, features='lxml'):
-    response = get_response(session, url)
-    if response is None:
-        logging.exception(
-            f'Возникла ошибка при загрузке страницы {url}',
-            stack_info=True
-        )
-        return
-    # Создание "супа".
-    soup = BeautifulSoup(response.text, features='lxml')
-    return soup
+from exceptions import EmptyTagList, ParserFindTagException
+from utils import find_tag, get_response, make_soup
 
 
 def whats_new(session):
     # Вместо константы WHATS_NEW_URL, используйте переменную whats_new_url.
     whats_new_url = urljoin(MAIN_DOC_URL, 'whatsnew/')
-    print(whats_new_url)
     soup = make_soup(session, whats_new_url)
 
     # Шаг 1-й: поиск в "супе" тега section с нужным id. Парсеру нужен только
@@ -61,11 +48,14 @@ def whats_new(session):
             return
         soup = BeautifulSoup(response.text, features='lxml')  # Сварите
         # "супчик".
-        h1 = find_tag(soup, 'h1')  # Найдите в "супе" тег h1.
-        dl = find_tag(soup, 'dl')
-        dl_text = dl.text.replace('\n', ' ')  # Найдите в "супе" тег dl.
+        main_page_section = find_tag(
+            soup,
+            'div',
+            attrs={'class': 'body'}
+        )  # Найдите в "супе" тег h1.
+        dl_text = main_page_section.dl.text.replace('\n', ' ')  # Найдите в "супе" тег dl.
         results.append(
-            (version_link, h1.text, dl_text)
+            (version_link, main_page_section.h1.text, dl_text)
         )
     return results
 
@@ -95,8 +85,7 @@ def download(session):
 
     soup = make_soup(session, downloads_url)
 
-    main_tag = find_tag(soup, 'div', {'role': 'main'})
-    table_tag = find_tag(main_tag, 'table', {'class': 'docutils'})
+    table_tag = find_tag(soup, 'table', {'class': 'docutils'})
 
     pdf_a4_tag = find_tag(
         table_tag,
@@ -168,9 +157,9 @@ def pep(session):
                 EXPECTED_STATUS[table_status[1:]]
             ))
         else:
-            for k in statuses.keys():
-                if k.startswith(table_status[1:]):
-                    statuses[k] += 1
+            for keys in statuses.keys():
+                if keys.startswith(table_status[1:]):
+                    statuses[keys] += 1
                 elif table_status[1:] == '':
                     statuses['*Draft/Active'] += 1
 
@@ -207,10 +196,18 @@ def main():
 
     parser_mode = args.mode
 
-    results = MODE_TO_FUNCTION[parser_mode](session)
-    if results is not None:
-        control_output(results, args)
-    logging.info('парсер завершли свою работу')
+    try:
+        results = MODE_TO_FUNCTION[parser_mode](session)
+        if results is not None:
+            control_output(results, args)
+        logging.info('парсер завершли свою работу')
+    except RequestException:
+        logging.exception(
+            ('Возникла ошибка при загрузке данных '
+             f'со страницы в методе {parser_mode}')
+        )
+    except ParserFindTagException as error_msg:
+        logging.error(error_msg, stack_info=True)
 
 
 if __name__ == '__main__':
