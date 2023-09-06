@@ -8,6 +8,6 @@ class EmptyTagList(Exception):
     pass
 
 
-class RequestException(Exception):
+class InvalidResponseException(Exception):
     """Вызывается, если модуль не смог получить доступ к ресурсу."""
     pass

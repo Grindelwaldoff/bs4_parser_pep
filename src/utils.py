@@ -1,12 +1,14 @@
 from bs4 import BeautifulSoup
 
-from exceptions import ParserFindTagException, RequestException
+from exceptions import ParserFindTagException, InvalidResponseException
 
 
 def make_soup(session, url, features='lxml'):
     response = get_response(session, url)
     if response is None:
-        raise RequestException
+        raise InvalidResponseException(
+            'Invalid response received.'
+        )
     soup = BeautifulSoup(response.text, features='lxml')
     return soup
 

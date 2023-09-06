@@ -8,7 +8,10 @@ from tqdm import tqdm
 from constants import BASE_DIR, MAIN_DOC_URL, PEP_DOC_URL, EXPECTED_STATUS
 from configs import configure_argument_parser, configure_logging
 from outputs import control_output
-from exceptions import EmptyTagList, ParserFindTagException, RequestException
+from exceptions import (
+    EmptyTagList, ParserFindTagException,
+    InvalidResponseException
+)
 from utils import find_tag, make_soup
 
 
@@ -195,7 +198,7 @@ def main():
         if results is not None:
             control_output(results, args)
         logging.info('парсер завершли свою работу')
-    except RequestException:
+    except InvalidResponseException:
         logging.exception(
             ('Возникла ошибка при загрузке данных '
              f'со страницы в методе {parser_mode}')
